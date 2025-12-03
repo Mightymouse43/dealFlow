@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Pressable } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { X, Folder, Trash2, Edit2 } from 'lucide-react-native';
 
@@ -38,12 +38,8 @@ export default function FolderListModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <View style={styles.modalContainer}>
           <View style={styles.modal}>
           <View style={styles.header}>
             <Text style={styles.title}>Move to Folder</Text>
@@ -103,8 +99,8 @@ export default function FolderListModal({
             ))}
           </ScrollView>
         </View>
-        </TouchableOpacity>
-      </TouchableOpacity>
+        </View>
+      </Pressable>
     </Modal>
   );
 }
@@ -117,11 +113,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  modalContainer: {
+    width: '100%',
+    maxWidth: 500,
+  },
   modal: {
     backgroundColor: Colors.cardBackground,
     borderRadius: 16,
     width: '100%',
-    maxWidth: 500,
     maxHeight: '70%',
   },
   header: {
