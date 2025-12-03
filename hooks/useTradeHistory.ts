@@ -8,9 +8,18 @@ export const useTradeHistory = () => {
 
   const loadTrades = useCallback(async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        console.error('User not authenticated');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('trades')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -41,10 +50,18 @@ export const useTradeHistory = () => {
 
   const deleteTrade = useCallback(async (tradeId: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        console.error('User not authenticated');
+        return false;
+      }
+
       const { error } = await supabase
         .from('trades')
         .delete()
-        .eq('id', tradeId);
+        .eq('id', tradeId)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
