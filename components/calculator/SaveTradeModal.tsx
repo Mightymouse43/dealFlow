@@ -39,9 +39,17 @@ export const SaveTradeModal = ({
 
   const loadFolders = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        console.error('User not authenticated');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('folders')
         .select('id, name, color')
+        .eq('user_id', user.id)
         .order('name', { ascending: true });
 
       if (error) throw error;

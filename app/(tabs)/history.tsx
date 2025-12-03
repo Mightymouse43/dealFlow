@@ -82,9 +82,17 @@ export default function HistoryScreen() {
 
   const loadFolders = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        console.error('User not authenticated');
+        return;
+      }
+
       const { data: foldersData, error: foldersError } = await supabase
         .from('folders')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: true });
 
       if (foldersError) throw foldersError;
