@@ -1,8 +1,6 @@
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { X, Folder, Trash2 } from 'lucide-react-native';
-import { DeleteConfirmModal } from './DeleteConfirmModal';
-import { useState } from 'react';
 
 interface FolderData {
   id: string;
@@ -15,7 +13,7 @@ interface ManageFoldersModalProps {
   visible: boolean;
   onClose: () => void;
   folders: FolderData[];
-  onDeleteFolder: (folderId: string) => void;
+  onDeleteFolder: (folder: FolderData) => void;
 }
 
 export default function ManageFoldersModal({
@@ -24,36 +22,23 @@ export default function ManageFoldersModal({
   folders,
   onDeleteFolder,
 }: ManageFoldersModalProps) {
-  const [folderToDelete, setFolderToDelete] = useState<FolderData | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
   const handleDeletePress = (folder: FolderData) => {
-    setFolderToDelete(folder);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (folderToDelete) {
-      onDeleteFolder(folderToDelete.id);
-      setShowDeleteConfirm(false);
-      setFolderToDelete(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeleteConfirm(false);
-    setFolderToDelete(null);
+    onDeleteFolder(folder);
   };
 
   return (
-    <>
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={onClose}
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={onClose}
       >
-        <View style={styles.overlay}>
+        <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
           <View style={styles.modal}>
             <View style={styles.header}>
               <Text style={styles.title}>Manage Folders</Text>
@@ -90,6 +75,8 @@ export default function ManageFoldersModal({
                     <TouchableOpacity
                       style={styles.deleteButton}
                       onPress={() => handleDeletePress(folder)}
+                      activeOpacity={0.7}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                       <Trash2 color={Colors.error} size={20} />
                     </TouchableOpacity>
@@ -106,21 +93,9 @@ export default function ManageFoldersModal({
               </View>
             )}
           </View>
-        </View>
-      </Modal>
-
-      <DeleteConfirmModal
-        visible={showDeleteConfirm}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        title="Delete Folder?"
-        message={
-          folderToDelete
-            ? `Are you sure you want to delete "${folderToDelete.name}"? All trades in this folder will be moved to Uncategorized.`
-            : ''
-        }
-      />
-    </>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
   );
 }
 
@@ -214,7 +189,9 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   deleteButton: {
-    padding: 8,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: Colors.cardBackground,
   },
   footer: {
     padding: 16,

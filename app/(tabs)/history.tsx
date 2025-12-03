@@ -17,7 +17,7 @@ interface FolderData {
   id: string;
   name: string;
   color: string;
-  tradeCount: number;
+  tradeCount?: number;
 }
 
 export default function HistoryScreen() {
@@ -35,6 +35,8 @@ export default function HistoryScreen() {
   const [showProModal, setShowProModal] = useState(false);
   const [proFeature, setProFeature] = useState<'scan' | 'history' | 'custom_percent' | 'folder'>('folder');
   const [tradeToMove, setTradeToMove] = useState<SavedTrade | null>(null);
+  const [folderToDelete, setFolderToDelete] = useState<FolderData | null>(null);
+  const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -155,7 +157,14 @@ export default function HistoryScreen() {
     }
   };
 
-  const handleDeleteFolder = async (folderId: string) => {
+  const handleDeleteFolderPress = (folder: FolderData) => {
+    setFolderToDelete(folder);
+    setShowDeleteFolderModal(true);
+  };
+
+  const confirmDeleteFolder = async () => {
+    if (!folderToDelete) return;
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -167,7 +176,7 @@ export default function HistoryScreen() {
       const { error } = await supabase
         .from('folders')
         .delete()
-        .eq('id', folderId)
+        .eq('id', folderToDelete.id)
         .eq('user_id', user.id);
 
       if (error) {
@@ -175,14 +184,28 @@ export default function HistoryScreen() {
         throw error;
       }
 
-      if (selectedFolder === folderId) {
+      if (selectedFolder === folderToDelete.id) {
         setSelectedFolder(null);
       }
 
+      setShowDeleteFolderModal(false);
+      setFolderToDelete(null);
       await loadFolders();
       await loadTrades();
     } catch (error) {
       console.error('Error deleting folder:', error);
+    }
+  };
+
+  const cancelDeleteFolder = () => {
+    setShowDeleteFolderModal(false);
+    setFolderToDelete(null);
+  };
+
+  const handleDeleteFolderById = (folderId: string) => {
+    const folder = folders.find(f => f.id === folderId);
+    if (folder) {
+      handleDeleteFolderPress(folder);
     }
   };
 
@@ -413,7 +436,7 @@ export default function HistoryScreen() {
         }}
         folders={folders}
         onSelectFolder={handleSelectFolderForTrade}
-        onDeleteFolder={handleDeleteFolder}
+        onDeleteFolder={handleDeleteFolderById}
         currentFolderId={tradeToMove?.folderId || null}
       />
 
@@ -421,7 +444,19 @@ export default function HistoryScreen() {
         visible={showManageFoldersModal}
         onClose={() => setShowManageFoldersModal(false)}
         folders={folders}
-        onDeleteFolder={handleDeleteFolder}
+        onDeleteFolder={handleDeleteFolderPress}
+      />
+
+      <DeleteConfirmModal
+        visible={showDeleteFolderModal}
+        onConfirm={confirmDeleteFolder}
+        onCancel={cancelDeleteFolder}
+        title="Delete Folder?"
+        message={
+          folderToDelete
+            ? `Are you sure you want to delete "${folderToDelete.name}"? All trades in this folder will be moved to Uncategorized.`
+            : ''
+        }
       />
 
       <ProUpgradeModal

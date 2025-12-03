@@ -38,8 +38,13 @@ export const TradeDetailModal = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+          <View style={styles.modal}>
           <View style={styles.header}>
             <View>
               <Text style={styles.title}>Trade Details</Text>
@@ -117,7 +122,8 @@ export const TradeDetailModal = ({
             </View>
           </ScrollView>
         </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 };

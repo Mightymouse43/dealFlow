@@ -38,8 +38,13 @@ export default function FolderListModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+          <View style={styles.modal}>
           <View style={styles.header}>
             <Text style={styles.title}>Move to Folder</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -89,6 +94,8 @@ export default function FolderListModal({
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => onDeleteFolder(folder.id)}
+                  activeOpacity={0.7}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Trash2 color={Colors.textSecondary} size={18} />
                 </TouchableOpacity>
@@ -96,7 +103,8 @@ export default function FolderListModal({
             ))}
           </ScrollView>
         </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 }

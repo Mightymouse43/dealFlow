@@ -50,8 +50,13 @@ export default function CreateFolderModal({ visible, onClose, onCreateFolder }: 
       animationType="fade"
       onRequestClose={handleClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={handleClose}
+      >
+        <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+          <View style={styles.modal}>
           <View style={styles.header}>
             <Text style={styles.title}>Create Folder</Text>
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -113,7 +118,8 @@ export default function CreateFolderModal({ visible, onClose, onCreateFolder }: 
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 }
