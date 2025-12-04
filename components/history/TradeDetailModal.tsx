@@ -1,4 +1,4 @@
-import { Modal, View, Text, TouchableOpacity, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { X } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { SavedTrade } from '@/types/calculator';
@@ -38,7 +38,7 @@ export const TradeDetailModal = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
         <View style={styles.modal}>
           <View style={styles.header}>
             <View>
@@ -117,7 +117,7 @@ export const TradeDetailModal = ({
             </View>
           </ScrollView>
         </View>
-      </Pressable>
+      </View>
     </Modal>
   );
 };

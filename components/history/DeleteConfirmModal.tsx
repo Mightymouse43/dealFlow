@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 interface DeleteConfirmModalProps {
@@ -23,9 +23,8 @@ export function DeleteConfirmModal({
       animationType="fade"
       onRequestClose={onCancel}
     >
-      <Pressable style={styles.overlay} onPress={onCancel}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
+      <View style={styles.overlay}>
+        <View style={styles.modal}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
 
@@ -47,8 +46,7 @@ export function DeleteConfirmModal({
             </TouchableOpacity>
           </View>
         </View>
-        </View>
-      </Pressable>
+      </View>
     </Modal>
   );
 }
@@ -61,15 +59,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  modalContainer: {
-    width: '100%',
-    maxWidth: 400,
-  },
   modal: {
     backgroundColor: Colors.cardBackground,
     borderRadius: 16,
     padding: 24,
     width: '100%',
+    maxWidth: 400,
   },
   title: {
     fontSize: 20,

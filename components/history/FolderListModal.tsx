@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { X, Folder, Trash2, Edit2 } from 'lucide-react-native';
 
@@ -38,9 +38,8 @@ export default function FolderListModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
+      <View style={styles.overlay}>
+        <View style={styles.modal}>
           <View style={styles.header}>
             <Text style={styles.title}>Move to Folder</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -90,8 +89,6 @@ export default function FolderListModal({
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => onDeleteFolder(folder.id)}
-                  activeOpacity={0.7}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Trash2 color={Colors.textSecondary} size={18} />
                 </TouchableOpacity>
@@ -99,8 +96,7 @@ export default function FolderListModal({
             ))}
           </ScrollView>
         </View>
-        </View>
-      </Pressable>
+      </View>
     </Modal>
   );
 }
@@ -113,14 +109,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  modalContainer: {
-    width: '100%',
-    maxWidth: 500,
-  },
   modal: {
     backgroundColor: Colors.cardBackground,
     borderRadius: 16,
     width: '100%',
+    maxWidth: 500,
     maxHeight: '70%',
   },
   header: {
