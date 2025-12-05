@@ -199,7 +199,7 @@ export function CameraScanModal({ visible, onClose, onCardRecognized }: CameraSc
                 <X color="#FFFFFF" size={28} />
               </TouchableOpacity>
               <Image
-                source={{ uri: 'https://res.cloudinary.com/dq6gnzyrn/image/upload/v1764381967/Deal_flow_200x50_cflqfe.png' }}
+                source={{ uri: 'https://res.cloudinary.com/dq6gnzyrn/image/upload/v1764899630/Deal_flow_200x50_rrqwrs.png' }}
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -273,8 +273,8 @@ const styles = StyleSheet.create({
     left: 20,
   },
   logo: {
-    width: 125,
-    height: 125,
+    width: 150,
+    height: 38,
   },
   scanArea: {
     flex: 1,
