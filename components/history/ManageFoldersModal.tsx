@@ -90,6 +90,8 @@ export default function ManageFoldersModal({
                     <TouchableOpacity
                       style={styles.deleteButton}
                       onPress={() => handleDeletePress(folder)}
+                      activeOpacity={0.6}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                       <Trash2 color={Colors.error} size={20} />
                     </TouchableOpacity>
@@ -214,7 +216,11 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   deleteButton: {
-    padding: 8,
+    padding: 12,
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   footer: {
     padding: 16,
