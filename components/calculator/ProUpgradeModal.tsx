@@ -346,27 +346,29 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   buttonsContainer: {
-    flexDirection: 'row',
     gap: 12,
   },
   cancelButton: {
-    flex: 1,
     paddingVertical: 16,
+    paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.secondary,
+    borderRadius: 12,
   },
   cancelButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: Colors.secondary,
   },
   upgradeButtonsColumn: {
-    flex: 2,
     gap: 8,
   },
   upgradeButton: {
     backgroundColor: Colors.primary,
     paddingVertical: 16,
+    paddingHorizontal: 20,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -375,14 +377,16 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   upgradeButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
     textAlign: 'center',
+    flexWrap: 'wrap',
   },
   upgradeNowButton: {
     backgroundColor: Colors.secondary,
     paddingVertical: 14,
+    paddingHorizontal: 20,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -392,5 +396,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.background,
     textAlign: 'center',
+    flexWrap: 'wrap',
   },
 });
