@@ -15,10 +15,20 @@ interface ProUpgradeModalProps {
 export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemaining = 0, isPro = false }: ProUpgradeModalProps) => {
   const { activateFreeTrial, isOnTrial } = useAuth();
   const [activatingTrial, setActivatingTrial] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
 
-  const handleUpgrade = () => {
-    console.log('Upgrade to Pro/Yearly clicked');
+  const handleUpgrade = (plan: 'monthly' | 'yearly') => {
+    console.log(`Upgrade to ${plan} plan clicked`);
     onClose();
+  };
+
+  const handleRestorePurchases = () => {
+    console.log('Restore purchases clicked');
+    Alert.alert(
+      'Restore Purchases',
+      'Checking for previous purchases...',
+      [{ text: 'OK' }]
+    );
   };
 
   const handleStartTrial = async () => {
@@ -199,11 +209,53 @@ export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemai
               </View>
             </View>
 
-            <View style={styles.subscriptionBox}>
-              <Text style={styles.subscriptionTitle}>Subscription Details:</Text>
+            <View style={styles.pricingContainer}>
+              <Text style={styles.subscriptionTitle}>Choose Your Plan:</Text>
 
+              <View style={styles.pricingOptions}>
+                <TouchableOpacity
+                  style={[
+                    styles.pricingOption,
+                    selectedPlan === 'monthly' && styles.pricingOptionSelected,
+                  ]}
+                  onPress={() => setSelectedPlan('monthly')}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.pricingOptionHeader}>
+                    <Text style={styles.pricingOptionTitle}>Monthly</Text>
+                    <View style={styles.radioButton}>
+                      {selectedPlan === 'monthly' && <View style={styles.radioButtonInner} />}
+                    </View>
+                  </View>
+                  <Text style={styles.pricingOptionPrice}>$4.99/month</Text>
+                  <Text style={styles.pricingOptionDetails}>$59.88 billed annually</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.pricingOption,
+                    selectedPlan === 'yearly' && styles.pricingOptionSelected,
+                  ]}
+                  onPress={() => setSelectedPlan('yearly')}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.savingsBadge}>
+                    <Text style={styles.savingsBadgeText}>SAVE 30%</Text>
+                  </View>
+                  <View style={styles.pricingOptionHeader}>
+                    <Text style={styles.pricingOptionTitle}>Yearly</Text>
+                    <View style={styles.radioButton}>
+                      {selectedPlan === 'yearly' && <View style={styles.radioButtonInner} />}
+                    </View>
+                  </View>
+                  <Text style={styles.pricingOptionPrice}>$42/year</Text>
+                  <Text style={styles.pricingOptionDetails}>$3.50/month</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.subscriptionBox}>
               <View style={styles.detailsContainer}>
-                <Text style={styles.detailText}>• Price: $3.99 USD per month</Text>
                 <Text style={styles.detailText}>
                   • Subscription automatically renews unless canceled 24 hours before period ends
                 </Text>
@@ -224,31 +276,41 @@ export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemai
 
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={onClose}
+                style={[styles.upgradeButton, activatingTrial && styles.upgradeButtonDisabled]}
+                onPress={handleStartTrial}
                 activeOpacity={0.7}
+                disabled={activatingTrial}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.upgradeButtonText}>
+                  {activatingTrial ? 'Activating...' : 'Start 7 Day FREE Trial'}
+                </Text>
               </TouchableOpacity>
 
-              <View style={styles.upgradeButtonsColumn}>
+              <TouchableOpacity
+                style={styles.upgradeNowButton}
+                onPress={() => handleUpgrade(selectedPlan)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.upgradeNowButtonText}>
+                  Subscribe - {selectedPlan === 'monthly' ? '$4.99/mo' : '$42/year'}
+                </Text>
+              </TouchableOpacity>
+
+              <View style={styles.secondaryButtonsRow}>
                 <TouchableOpacity
-                  style={[styles.upgradeButton, activatingTrial && styles.upgradeButtonDisabled]}
-                  onPress={handleStartTrial}
+                  style={styles.restorePurchasesButton}
+                  onPress={handleRestorePurchases}
                   activeOpacity={0.7}
-                  disabled={activatingTrial}
                 >
-                  <Text style={styles.upgradeButtonText}>
-                    {activatingTrial ? 'Activating...' : '7 Day FREE Trial'}
-                  </Text>
+                  <Text style={styles.restorePurchasesText}>Restore Purchases</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.upgradeNowButton}
-                  onPress={handleUpgrade}
+                  style={styles.cancelButton}
+                  onPress={onClose}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.upgradeNowButtonText}>Upgrade Now</Text>
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -345,22 +407,88 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     textDecorationLine: 'underline',
   },
+  pricingContainer: {
+    marginBottom: 20,
+  },
+  pricingOptions: {
+    gap: 12,
+    marginTop: 12,
+  },
+  pricingOption: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 16,
+    position: 'relative',
+  },
+  pricingOptionSelected: {
+    borderColor: Colors.primary,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+  },
+  pricingOptionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  pricingOptionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text,
+  },
+  pricingOptionPrice: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginBottom: 4,
+  },
+  pricingOptionDetails: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  radioButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioButtonInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.primary,
+  },
+  savingsBadge: {
+    position: 'absolute',
+    top: -8,
+    right: 12,
+    backgroundColor: Colors.secondary,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  savingsBadgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.background,
+  },
   buttonsContainer: {
     gap: 12,
   },
   cancelButton: {
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.secondary,
-    borderRadius: 12,
   },
   cancelButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: Colors.secondary,
+    color: Colors.textSecondary,
   },
   upgradeButtonsColumn: {
     gap: 8,
@@ -381,11 +509,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text,
     textAlign: 'center',
-    flexWrap: 'wrap',
   },
   upgradeNowButton: {
     backgroundColor: Colors.secondary,
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 12,
     alignItems: 'center',
@@ -393,9 +520,25 @@ const styles = StyleSheet.create({
   },
   upgradeNowButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: Colors.background,
     textAlign: 'center',
-    flexWrap: 'wrap',
+  },
+  secondaryButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginTop: 8,
+  },
+  restorePurchasesButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  restorePurchasesText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.primary,
   },
 });
