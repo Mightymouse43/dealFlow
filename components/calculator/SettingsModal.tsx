@@ -1,5 +1,5 @@
 import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { X, Save, User, LogOut, Crown } from 'lucide-react-native';
+import { X, Save, User, LogOut, Crown, CheckCircle2, Calculator, Coins, Camera } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -74,6 +74,7 @@ export const SettingsModal = ({
               showsVerticalScrollIndicator={false}
             >
               <ProfileSection />
+              <FeaturesSection />
 
               <View style={styles.content}>
                 <Text style={styles.sectionTitle}>Default Percentages</Text>
@@ -309,6 +310,78 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.error,
   },
+  featuresSection: {
+    padding: 24,
+    paddingTop: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  featuresSectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text,
+    marginBottom: 8,
+  },
+  featuresDescription: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  featuresList: {
+    gap: 12,
+    marginBottom: 16,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: Colors.cardBackground,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  featureIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  featureTextContainer: {
+    flex: 1,
+    gap: 2,
+  },
+  featureTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.text,
+  },
+  featureDescription: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+  },
+  upgradeHintBox: {
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 107, 0.3)',
+    borderRadius: 12,
+    padding: 12,
+    gap: 4,
+  },
+  upgradeHintText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.text,
+    lineHeight: 18,
+  },
+  upgradeHintSubtext: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
 });
 
 function ProfileSection() {
@@ -345,6 +418,60 @@ function ProfileSection() {
         <LogOut color={Colors.error} size={18} />
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
+    </View>
+  );
+}
+
+function FeaturesSection() {
+  const { isPro } = useAuth();
+
+  if (isPro) return null;
+
+  return (
+    <View style={styles.featuresSection}>
+      <Text style={styles.featuresSectionTitle}>Your Free Features</Text>
+      <Text style={styles.featuresDescription}>
+        You currently have access to these features:
+      </Text>
+
+      <View style={styles.featuresList}>
+        <View style={styles.featureItem}>
+          <View style={styles.featureIconContainer}>
+            <Calculator color={Colors.primary} size={20} />
+          </View>
+          <View style={styles.featureTextContainer}>
+            <Text style={styles.featureTitle}>Trade Calculator</Text>
+            <Text style={styles.featureDescription}>Full access to the trade calculator</Text>
+          </View>
+        </View>
+
+        <View style={styles.featureItem}>
+          <View style={styles.featureIconContainer}>
+            <Coins color={Colors.primary} size={20} />
+          </View>
+          <View style={styles.featureTextContainer}>
+            <Text style={styles.featureTitle}>Coin Flip</Text>
+            <Text style={styles.featureDescription}>Settle trades with a coin flip</Text>
+          </View>
+        </View>
+
+        <View style={styles.featureItem}>
+          <View style={styles.featureIconContainer}>
+            <Camera color={Colors.primary} size={20} />
+          </View>
+          <View style={styles.featureTextContainer}>
+            <Text style={styles.featureTitle}>Card Scanning</Text>
+            <Text style={styles.featureDescription}>3 AI card scans per day</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.upgradeHintBox}>
+        <Text style={styles.upgradeHintText}>
+          Want unlimited scans, trade history, and custom percentages?
+        </Text>
+        <Text style={styles.upgradeHintSubtext}>Upgrade to PRO in the Calculator tab</Text>
+      </View>
     </View>
   );
 }
