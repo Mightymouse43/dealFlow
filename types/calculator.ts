@@ -51,9 +51,8 @@ export interface CardData {
   updatedAt: string;
   tcgplayer: {
     marketPrice: number;
-    latestSalePrice?: number | null;
-    latestSaleDate?: string | null;
-    lowListingPrice?: number | null;
+    condition?: string | null;
+    rarity?: string | null;
     url?: string | null;
   };
   ebayGraded?: {

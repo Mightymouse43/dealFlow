@@ -83,24 +83,19 @@ export function CardDetailModal({ visible, cardData, onClose, onAddToCalculator 
                 </View>
 
                 <View style={styles.priceCard}>
-                  <Text style={styles.priceLabel}>Low Listing</Text>
+                  <Text style={styles.priceLabel}>Condition</Text>
                   <Text style={styles.priceValue}>
-                    {formatPrice(cardData.tcgplayer.lowListingPrice)}
+                    {cardData.tcgplayer.condition || 'N/A'}
                   </Text>
                 </View>
               </View>
 
               <View style={styles.priceGrid}>
                 <View style={styles.priceCard}>
-                  <Text style={styles.priceLabel}>Latest Sale</Text>
+                  <Text style={styles.priceLabel}>Rarity</Text>
                   <Text style={styles.priceValue}>
-                    {formatPrice(cardData.tcgplayer.latestSalePrice)}
+                    {cardData.tcgplayer.rarity || 'N/A'}
                   </Text>
-                  {cardData.tcgplayer.latestSaleDate && (
-                    <Text style={styles.priceDate}>
-                      {formatDate(cardData.tcgplayer.latestSaleDate)}
-                    </Text>
-                  )}
                 </View>
 
                 {cardData.tcgplayer.url ? (
@@ -276,6 +271,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: Colors.text,
+    flexShrink: 1,
   },
   priceDate: {
     fontSize: 11,
