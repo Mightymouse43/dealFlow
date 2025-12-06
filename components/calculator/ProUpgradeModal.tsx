@@ -228,7 +228,6 @@ export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemai
                     </View>
                   </View>
                   <Text style={styles.pricingOptionPrice}>$4.99/month</Text>
-                  <Text style={styles.pricingOptionDetails}>$59.88 billed annually</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
