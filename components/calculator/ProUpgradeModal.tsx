@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Linking, Alert, Platform } from 'react-native';
 import { useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { Star, CheckCircle2, X } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRevenueCat } from '@/contexts/RevenueCatContext';
+import { RevenueCatPaywall } from '@/components/subscription/RevenueCatPaywall';
 
 interface ProUpgradeModalProps {
   visible: boolean;
@@ -14,21 +16,55 @@ interface ProUpgradeModalProps {
 
 export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemaining = 0, isPro = false }: ProUpgradeModalProps) => {
   const { activateFreeTrial, isOnTrial } = useAuth();
+  const { restorePurchases: restoreRevenueCatPurchases } = useRevenueCat();
   const [activatingTrial, setActivatingTrial] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  const handleUpgrade = (plan: 'monthly' | 'yearly') => {
-    console.log(`Upgrade to ${plan} plan clicked`);
-    onClose();
+  const handleUpgrade = () => {
+    if (Platform.OS === 'web') {
+      Alert.alert(
+        'Not Available',
+        'Subscriptions are not available on web. Please use the iOS or Android app.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    setShowPaywall(true);
   };
 
-  const handleRestorePurchases = () => {
-    console.log('Restore purchases clicked');
-    Alert.alert(
-      'Restore Purchases',
-      'Checking for previous purchases...',
-      [{ text: 'OK' }]
-    );
+  const handleRestorePurchases = async () => {
+    if (Platform.OS === 'web') {
+      Alert.alert(
+        'Not Available',
+        'Restore purchases is not available on web. Please use the iOS or Android app.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    try {
+      const success = await restoreRevenueCatPurchases();
+      if (success) {
+        Alert.alert(
+          'Success',
+          'Your purchases have been restored!',
+          [{ text: 'Great!', onPress: onClose }]
+        );
+      } else {
+        Alert.alert(
+          'No Purchases Found',
+          'We could not find any previous purchases to restore.',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Failed to restore purchases. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
   };
 
   const handleStartTrial = async () => {
@@ -287,7 +323,7 @@ export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemai
 
               <TouchableOpacity
                 style={styles.upgradeNowButton}
-                onPress={() => handleUpgrade(selectedPlan)}
+                onPress={handleUpgrade}
                 activeOpacity={0.7}
               >
                 <Text style={styles.upgradeNowButtonText}>
@@ -316,6 +352,11 @@ export const ProUpgradeModal = ({ visible, onClose, feature = 'scan', scansRemai
           </ScrollView>
         </View>
       </View>
+      <RevenueCatPaywall
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={onClose}
+      />
     </Modal>
   );
 };

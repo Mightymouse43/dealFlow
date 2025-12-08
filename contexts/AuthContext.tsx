@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
+import { useRevenueCat } from '@/contexts/RevenueCatContext';
 
 interface UserProfile {
   id: string;
@@ -53,6 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const { entitlements, identifyUser: identifyRevenueCatUser, logout: logoutRevenueCat } = useRevenueCat();
 
   const loadProfile = async (userId: string) => {
     try {
@@ -83,6 +85,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadProfile(session.user.id);
+        identifyRevenueCatUser(session.user.id);
       }
       setLoading(false);
     });
@@ -92,6 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadProfile(session.user.id);
+        identifyRevenueCatUser(session.user.id);
       } else {
         setProfile(null);
       }
@@ -99,10 +103,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [identifyRevenueCatUser]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    await logoutRevenueCat();
     setSession(null);
     setUser(null);
     setProfile(null);
@@ -116,6 +121,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const isPro =
     isOnTrial ||
+    entitlements.isPro ||
     (profile?.subscription_tier === 'pro' &&
       (profile.subscription_expires === null ||
        new Date(profile.subscription_expires) > new Date()));

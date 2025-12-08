@@ -1,8 +1,9 @@
-import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { X, Save, User, LogOut, Crown, CheckCircle2, Calculator, Coins, Camera } from 'lucide-react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { X, Save, User, LogOut, Crown, CheckCircle2, Calculator, Coins, Camera, Settings2 } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import RevenueCatUI from 'react-native-purchases-ui';
 
 interface SettingsModalProps {
   visible: boolean;
@@ -293,6 +294,26 @@ const styles = StyleSheet.create({
   tierTextPro: {
     color: '#FFD700',
   },
+  actionButtons: {
+    gap: 12,
+  },
+  manageSubscriptionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+  },
+  manageSubscriptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
   signOutButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -391,6 +412,28 @@ function ProfileSection() {
     await signOut();
   };
 
+  const handleManageSubscription = async () => {
+    if (Platform.OS === 'web') {
+      Alert.alert(
+        'Not Available',
+        'Subscription management is not available on web. Please use the iOS or Android app.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    try {
+      await RevenueCatUI.presentCustomerCenter();
+    } catch (error) {
+      console.error('Error presenting customer center:', error);
+      Alert.alert(
+        'Error',
+        'Failed to open subscription management. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
   if (!user || !profile) return null;
 
   return (
@@ -410,14 +453,27 @@ function ProfileSection() {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.signOutButton}
-        onPress={handleSignOut}
-        activeOpacity={0.7}
-      >
-        <LogOut color={Colors.error} size={18} />
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
+      <View style={styles.actionButtons}>
+        {isPro && (
+          <TouchableOpacity
+            style={styles.manageSubscriptionButton}
+            onPress={handleManageSubscription}
+            activeOpacity={0.7}
+          >
+            <Settings2 color={Colors.primary} size={18} />
+            <Text style={styles.manageSubscriptionText}>Manage Subscription</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          style={styles.signOutButton}
+          onPress={handleSignOut}
+          activeOpacity={0.7}
+        >
+          <LogOut color={Colors.error} size={18} />
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
