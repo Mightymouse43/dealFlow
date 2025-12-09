@@ -82,14 +82,7 @@ export function CameraScanModal({ visible, onClose, onCardRecognized }: CameraSc
         throw new Error('Server returned invalid JSON');
       }
 
-      const hasTcgData = data.tcgplayer?.marketPrice != null;
-      const hasEbayData = data.ebayGraded && (
-        data.ebayGraded.averagePrice != null ||
-        data.ebayGraded.highestPrice != null ||
-        data.ebayGraded.lowestPrice != null
-      );
-
-      if (data.cardName && (hasTcgData || hasEbayData)) {
+      if (data.cardName && data.tcgplayer?.marketPrice != null) {
         console.log('Card recognized:', data.cardName);
         onCardRecognized(data as CardData);
         setIsIdentifying(false);
@@ -97,7 +90,7 @@ export function CameraScanModal({ visible, onClose, onCardRecognized }: CameraSc
       } else {
         setIsIdentifying(false);
         console.warn('Card not recognized. Response:', data);
-        alert('Card not recognized. Missing required fields: cardName or price data (TCGplayer or eBay)');
+        alert('Card not recognized. Missing required fields: cardName or marketPrice');
       }
     } catch (error) {
       clearTimeout(timeoutId);

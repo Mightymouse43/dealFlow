@@ -49,8 +49,8 @@ export interface TradeRecord {
 export interface CardData {
   cardName: string;
   updatedAt: string;
-  tcgplayer?: {
-    marketPrice?: number | null;
+  tcgplayer: {
+    marketPrice: number;
     condition?: string | null;
     rarity?: string | null;
     url?: string | null;
