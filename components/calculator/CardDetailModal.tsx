@@ -19,8 +19,40 @@ export function CardDetailModal({ visible, cardData, onClose, onAddToCalculator 
   console.log('ebayGraded object:', cardData.ebayGraded);
   console.log('========================');
 
+  const getCardPrice = (): number => {
+    if (cardData.tcgplayer?.marketPrice != null) {
+      return cardData.tcgplayer.marketPrice;
+    }
+    if (cardData.ebayGraded?.averagePrice != null) {
+      return cardData.ebayGraded.averagePrice;
+    }
+    if (cardData.ebayGraded?.highestPrice != null) {
+      return cardData.ebayGraded.highestPrice;
+    }
+    if (cardData.ebayGraded?.lowestPrice != null) {
+      return cardData.ebayGraded.lowestPrice;
+    }
+    return 0;
+  };
+
+  const getPriceSource = (): string => {
+    if (cardData.tcgplayer?.marketPrice != null) {
+      return 'TCGPlayer';
+    }
+    if (cardData.ebayGraded?.averagePrice != null) {
+      return 'eBay Average';
+    }
+    if (cardData.ebayGraded?.highestPrice != null) {
+      return 'eBay High';
+    }
+    if (cardData.ebayGraded?.lowestPrice != null) {
+      return 'eBay Low';
+    }
+    return 'Unknown';
+  };
+
   const handleAddCard = () => {
-    const price = cardData.tcgplayer.marketPrice ?? 0;
+    const price = getCardPrice();
     onAddToCalculator(price);
   };
 
@@ -68,51 +100,53 @@ export function CardDetailModal({ visible, cardData, onClose, onAddToCalculator 
             contentContainerStyle={styles.scrollContentContainer}
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.priceSection}>
-              <View style={styles.sectionHeader}>
-                <TrendingUp color={Colors.primary} size={20} />
-                <Text style={styles.sectionTitle}>TCGPlayer Pricing</Text>
-              </View>
-
-              <View style={styles.priceGrid}>
-                <View style={styles.priceCard}>
-                  <Text style={styles.priceLabel}>Market Price</Text>
-                  <Text style={styles.priceValue}>
-                    ${cardData.tcgplayer.marketPrice.toFixed(2)}
-                  </Text>
+            {cardData.tcgplayer?.marketPrice != null && (
+              <View style={styles.priceSection}>
+                <View style={styles.sectionHeader}>
+                  <TrendingUp color={Colors.primary} size={20} />
+                  <Text style={styles.sectionTitle}>TCGPlayer Pricing</Text>
                 </View>
 
-                <View style={styles.priceCard}>
-                  <Text style={styles.priceLabel}>Condition</Text>
-                  <Text style={styles.priceValue}>
-                    {cardData.tcgplayer.condition || 'N/A'}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.priceGrid}>
-                <View style={styles.priceCard}>
-                  <Text style={styles.priceLabel}>Rarity</Text>
-                  <Text style={styles.priceValue}>
-                    {cardData.tcgplayer.rarity || 'N/A'}
-                  </Text>
-                </View>
-
-                {cardData.tcgplayer.url ? (
-                  <TouchableOpacity
-                    style={[styles.priceCard, styles.linkCard]}
-                    onPress={() => openUrl(cardData.tcgplayer.url!)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.linkText}>View on TCGPlayer</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <View style={[styles.priceCard, styles.disabledCard]}>
-                    <Text style={styles.disabledText}>Link Unavailable</Text>
+                <View style={styles.priceGrid}>
+                  <View style={styles.priceCard}>
+                    <Text style={styles.priceLabel}>Market Price</Text>
+                    <Text style={styles.priceValue}>
+                      ${cardData.tcgplayer.marketPrice.toFixed(2)}
+                    </Text>
                   </View>
-                )}
+
+                  <View style={styles.priceCard}>
+                    <Text style={styles.priceLabel}>Condition</Text>
+                    <Text style={styles.priceValue}>
+                      {cardData.tcgplayer.condition || 'N/A'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.priceGrid}>
+                  <View style={styles.priceCard}>
+                    <Text style={styles.priceLabel}>Rarity</Text>
+                    <Text style={styles.priceValue}>
+                      {cardData.tcgplayer.rarity || 'N/A'}
+                    </Text>
+                  </View>
+
+                  {cardData.tcgplayer.url ? (
+                    <TouchableOpacity
+                      style={[styles.priceCard, styles.linkCard]}
+                      onPress={() => openUrl(cardData.tcgplayer.url!)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.linkText}>View on TCGPlayer</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={[styles.priceCard, styles.disabledCard]}>
+                      <Text style={styles.disabledText}>Link Unavailable</Text>
+                    </View>
+                  )}
+                </View>
               </View>
-            </View>
+            )}
 
             {cardData.ebayGraded && (
               <View style={styles.gradedSection}>
@@ -177,7 +211,7 @@ export function CardDetailModal({ visible, cardData, onClose, onAddToCalculator 
             >
               <DollarSign color={Colors.background} size={20} />
               <Text style={styles.addButtonText}>
-                Add at ${cardData.tcgplayer.marketPrice.toFixed(2)}
+                Add at ${getCardPrice().toFixed(2)} ({getPriceSource()})
               </Text>
             </TouchableOpacity>
           </View>
